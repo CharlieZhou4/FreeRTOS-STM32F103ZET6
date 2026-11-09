@@ -52,8 +52,11 @@ monitor:
 	  -c "adapter speed 200" -c "reset_config srst_only srst_nogate connect_assert_srst" \
 	  -c "init" -c "arm semihosting enable" -c "reset run"
 
+# Flash, then show vPrintString output in this terminal (Ctrl+C to quit)
+run: flash monitor
+
 clean:
 	rm -rf $(BUILD)
 
 -include $(OBJS:.o=.d)
-.PHONY: all flash monitor clean
+.PHONY: all flash monitor run clean

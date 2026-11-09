@@ -3,6 +3,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "print.h"
+#include "tick_test.h"
 
 void vTask2(void *pvParameters)
 {
@@ -59,9 +60,11 @@ static const char *pcTextForTask2 = "Task2 is running\r\n";
     NVIC_SetPriorityGrouping(0);  /* all bits as preemption priority, required by FreeRTOS */
 
     /* Create your tasks here, before starting the scheduler. */
-    xTaskCreate(vTaskFunction, "Task1", 1000, (void *)pcTextForTask1, 1, NULL);
-    xTaskCreate(vTaskFunction, "Task2", 1000, (void *)pcTextForTask2, 1, NULL);
+    //xTaskCreate(vTaskFunction, "Task1", 1000, (void *)pcTextForTask1, 1, NULL);
+    //xTaskCreate(vTaskFunction, "Task2", 1000, (void *)pcTextForTask2, 1, NULL);
    
+    vTickTestStart();
+
     vTaskStartScheduler();
 
     for (;;) {}
@@ -78,4 +81,9 @@ void vApplicationStackOverflowHook(TaskHandle_t t, char *name)
     (void)t; (void)name;
     taskDISABLE_INTERRUPTS();
     for (;;) {}
+}
+
+void vApplicationTickHook(void)
+{
+    vTickTestHook();
 }
