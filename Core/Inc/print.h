@@ -1,8 +1,12 @@
 #ifndef PRINT_H
 #define PRINT_H
 
-/* Print a string to the OpenOCD terminal via ARM semihosting (no UART needed).
- * Silently does nothing when no debugger is attached. */
+/* Configure USART1 (PA9 = TX, 115200 8N1) with DMA1 channel 4.
+ * Call after the system clock is set up and before the scheduler starts. */
+void vPrintInit(void);
+
+/* Print a string over USART1 using DMA. Blocks only the calling task until the
+ * transfer completes. Call from tasks only, not from interrupts. */
 void vPrintString(const char *pcString);
 
 #endif
