@@ -9,4 +9,8 @@ void vPrintInit(void);
  * transfer completes. Call from tasks only, not from interrupts. */
 void vPrintString(const char *pcString);
 
+/* Print by busy-waiting on the UART. Never blocks the calling task, so it does not
+ * trigger a task switch. Not protected by the print mutex. */
+void vPrintStringPolled(const char *pcString);
+
 #endif

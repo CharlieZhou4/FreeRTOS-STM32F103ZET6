@@ -6,33 +6,32 @@
 #include "print.h"
 #include "tick_test.h"
 
-void vTask2(void *pvParameters)
-{
-    const char *pcTaskName = "Task2 is running\r\n";
-    volatile uint32_t ul;
-    for (;;) 
-    {
-        vPrintString(pcTaskName);
-        for (ul = 0; ul < 10000; ul++) 
-        {
-        }  /* crude delay */
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
+TaskHandle_t xTask1Handle = NULL;
+TaskHandle_t xTask2Handle = NULL;
 
 void vTask1(void *pvParameters)
 {
-    const char *pcTaskName = "Task1 is running\r\n";
-    volatile uint32_t ul;
-    xTaskCreate(vTask2, "Task2", 1000, NULL, 1, NULL);
+    UBaseType_t uxPriority;
+    uxPriority = uxTaskPriorityGet(NULL);
 
     for (;;) 
     {
-        vPrintString(pcTaskName);
-        for (ul = 0; ul < 10000; ul++) 
-        {
-        }  /* crude delay */
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vPrintStringPolled("Task1 is running\r\n");
+        vPrintStringPolled("About to raise the Task2 Priority\r\n");
+        vTaskPrioritySet(xTask2Handle, (uxPriority+1));
+    }
+}
+
+void vTask2(void *pvParameters)
+{
+    UBaseType_t uxPriority;
+    uxPriority = uxTaskPriorityGet(NULL);
+
+    for (;;) 
+    {
+        vPrintStringPolled("Task2 is running\r\n");
+        vPrintStringPolled("About to lower the Task1 Priority\r\n");
+        vTaskPrioritySet(xTask2Handle, (uxPriority-2));
     }
 }
 
@@ -131,8 +130,8 @@ int main(void)
     vPrintInit();
 
     /* Create your tasks here, before starting the scheduler. */
-    xTaskCreate(vTaskFunction, "Task1", 1000, (void*)pcTextForTask1, 1, NULL);
-    xTaskCreate(vTaskFunction, "Task2", 1000, (void*)pcTextForTask2, 1, NULL);
+    xTaskCreate(vTask1, "Task1", 1000, NULL, 2, NULL);
+    xTaskCreate(vTask2, "Task2", 1000, NULL, 1, &xTask2Handle);
     // xTaskCreate(vPeriodicTask, "vPeriodicTask", 1000, NULL, 2, NULL);
    
     vTaskStartScheduler();

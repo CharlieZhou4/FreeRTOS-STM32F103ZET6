@@ -49,7 +49,7 @@ void DMA1_Channel4_IRQHandler(void)
     portYIELD_FROM_ISR(xWoken);
 }
 
-static void vPrintPolled(const char *pcString)
+void vPrintStringPolled(const char *pcString)
 {
     while (*pcString) {
         while (!(USART1->SR & USART_SR_TXE)) {}
@@ -62,7 +62,7 @@ void vPrintString(const char *pcString)
 {
     /* Before the scheduler runs there is no task to block, so fall back to polling. */
     if (xTaskGetSchedulerState() != taskSCHEDULER_RUNNING) {
-        vPrintPolled(pcString);
+        vPrintStringPolled(pcString);
         return;
     }
 
